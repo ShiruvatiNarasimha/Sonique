@@ -1,136 +1,162 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ThumbsUp, ThumbsDown, Plus, Music, Share2 } from "lucide-react"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Plus, Music, ThumbsUp, ThumbsDown, Share2 } from "lucide-react";
+import { motion } from "framer-motion";
 
-interface Song {
-  id: number
-  title: string
-  artist: string
-  likes: number
-  dislikes: number
-}
-
-export default function Dashboard() {
+export default function SoniqueDashboard() {
   const [songs, setSongs] = useState<Song[]>([
-    { id: 1, title: "Bohemian Rhapsody", artist: "Queen", likes: 10, dislikes: 2 },
+    {
+      id: 1,
+      title: "Bohemian Rhapsody",
+      artist: "Queen",
+      likes: 10,
+      dislikes: 2,
+    },
     { id: 2, title: "Imagine", artist: "John Lennon", likes: 8, dislikes: 1 },
-    { id: 3, title: "Shape of You", artist: "Ed Sheeran", likes: 7, dislikes: 3 },
-  ])
-  const [newSong, setNewSong] = useState({ title: "", artist: "" })
+    {
+      id: 3,
+      title: "Shape of You",
+      artist: "Ed Sheeran",
+      likes: 7,
+      dislikes: 3,
+    },
+  ]);
+  const [newSong, setNewSong] = useState({ title: "", artist: "" });
 
   const addSong = () => {
-    if (newSong.title && newSong.artist) {
-      setSongs([...songs, { ...newSong, id: Date.now(), likes: 0, dislikes: 0 }])
-      setNewSong({ title: "", artist: "" })
-    }
+    if (!newSong.title || !newSong.artist) return;
+    setSongs([...songs, { id: Date.now(), ...newSong, likes: 0, dislikes: 0 }]);
+    setNewSong({ title: "", artist: "" });
+  };
+
+  interface Song {
+    id: number;
+    title: string;
+    artist: string;
+    likes: number;
+    dislikes: number;
   }
 
   const likeSong = (id: number) => {
     setSongs(
-      songs
-        .map((song) => (song.id === id ? { ...song, likes: song.likes + 1 } : song))
-        .sort((a, b) => b.likes - a.likes),
-    )
-  }
+      songs.map((song) =>
+        song.id === id ? { ...song, likes: song.likes + 1 } : song
+      )
+    );
+  };
 
   const dislikeSong = (id: number) => {
-    setSongs(songs.map((song) => (song.id === id ? { ...song, dislikes: song.dislikes + 1 } : song)))
-  }
+    setSongs(
+      songs.map((song: Song) =>
+        song.id === id ? { ...song, dislikes: song.dislikes + 1 } : song
+      )
+    );
+  };
 
-  const sharePage = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Check out this awesome song dashboard!',
-          url: window.location.href,
-        });
-        console.log('Share was successful.');
-      } catch (error) {
-        console.error('Error sharing:', error);
-      }
-    } else {
-      alert('Sharing is not supported in this browser.');
-    }
-  }
+  const sharePage = () => alert("Share feature coming soon!");
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4">
-      <div className="container mx-auto max-w-4xl">
-        <Card className="mb-6 bg-gray-800 border-none">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-6 flex flex-col items-center">
+      <motion.div
+        className="w-full max-w-4xl"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="mb-6 bg-gray-800/90 backdrop-blur-lg border border-gray-700 shadow-xl">
           <CardHeader>
-            <CardTitle className="text-2xl text-green-400">Sonique Dashboard</CardTitle>
+            <CardTitle className="text-3xl text-green-400">
+              Sonique Dashboard
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-2">
+            <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-3">
               <Input
                 placeholder="Song Title"
                 value={newSong.title}
-                onChange={(e) => setNewSong({ ...newSong, title: e.target.value })}
-                className="flex-grow bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                onChange={(e) =>
+                  setNewSong({ ...newSong, title: e.target.value })
+                }
+                className="flex-grow bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 px-4 py-2 rounded-lg"
               />
               <Input
                 placeholder="Artist"
                 value={newSong.artist}
-                onChange={(e) => setNewSong({ ...newSong, artist: e.target.value })}
-                className="flex-grow bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                onChange={(e) =>
+                  setNewSong({ ...newSong, artist: e.target.value })
+                }
+                className="flex-grow bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 px-4 py-2 rounded-lg"
               />
-              <Button onClick={addSong} className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-black">
-                <Plus className="mr-2 h-4 w-4" /> Add Song
+              <Button
+                onClick={addSong}
+                className="bg-green-500 hover:bg-green-600 text-black px-6 py-2 rounded-lg shadow-md"
+              >
+                <Plus className="mr-2 h-5 w-5" /> Add
               </Button>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gray-800 border-none">
+
+        <Card className="bg-gray-800/90 backdrop-blur-lg border border-gray-700 shadow-xl">
           <CardHeader>
-            <CardTitle className="text-xl text-green-400">Song Queue</CardTitle>
+            <CardTitle className="text-2xl text-green-400">
+              Song Queue
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
               {songs.map((song) => (
-                <li
+                <motion.li
                   key={song.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between bg-gray-700 p-4 rounded-lg"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between bg-gray-700/50 p-4 rounded-lg shadow-md"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
                 >
                   <div className="flex items-center mb-2 sm:mb-0">
-                    <Music className="mr-2 h-5 w-5 text-green-400" />
+                    <Music className="mr-2 h-6 w-6 text-green-400" />
                     <div>
-                      <h3 className="font-semibold text-white">{song.title}</h3>
+                      <h3 className="font-semibold text-white text-lg">
+                        {song.title}
+                      </h3>
                       <p className="text-sm text-gray-400">{song.artist}</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-3">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => likeSong(song.id)}
-                      className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+                      className="border-green-500 text-green-400 hover:bg-green-500 hover:text-white px-4 py-2 rounded-lg"
                     >
-                      <ThumbsUp className="mr-1 h-4 w-4" />
-                      {song.likes}
+                      <ThumbsUp className="mr-1 h-5 w-5" /> {song.likes}
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => dislikeSong(song.id)}
-                      className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                      className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-lg"
                     >
-                      <ThumbsDown className="mr-1 h-4 w-4" />
-                      {song.dislikes}
+                      <ThumbsDown className="mr-1 h-5 w-5" /> {song.dislikes}
                     </Button>
                   </div>
-                </li>
+                </motion.li>
               ))}
             </ul>
           </CardContent>
         </Card>
-        <Button onClick={sharePage} className="mt-4 bg-blue-500 hover:bg-blue-600 text-white">
-          <Share2 className="mr-2 h-4 w-4" /> Share This Page
+
+        <Button
+          onClick={sharePage}
+          className="mt-6 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow-lg"
+        >
+          <Share2 className="mr-2 h-5 w-5" /> Share This Page
         </Button>
-      </div>
+      </motion.div>
     </div>
-  )
+  );
 }
